@@ -1,0 +1,78 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: diemdanh_db
+    restart: unless-stopped
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-quan_ly_diem_danh}
+      MYSQL_USER: ${MYSQL_USER:-diemdanh_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/01_init.sql:ro
+    networks:
+      - app-network
+    # Không mở cổng ra máy host để đảm bảo nguyên tắc bảo mật mạng nội bộ
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER -p$$MYSQL_PASSWORD || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: diemdanh_backend
+    restart: unless-stopped
+    environment:
+      PORT: 3000
+      MYSQL_HOST: db
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-quan_ly_diem_danh}
+      MYSQL_USER: ${MYSQL_USER:-diemdanh_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"require('http').get('http://localhost:3000/api/health', (r) => process.exit(r.statusCode === 200 ? 0 : 1))\""]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  proxy:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    container_name: diemdanh_proxy
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-8080}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:80/api/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+    driver: local

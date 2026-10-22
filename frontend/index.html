@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hệ thống Quản lý Ca làm và Điểm danh</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="container header-content">
+      <div>
+        <h1 class="app-title">HỆ THỐNG QUẢN LÝ CA LÀM VÀ ĐIỂM DANH</h1>
+        <p class="app-subtitle">Bài tập môn Triển khai và Quản trị Hệ thống Phần mềm</p>
+      </div>
+      <div class="header-status">
+        <div id="clock" class="digital-clock">--:--:--</div>
+        <span id="conn-status" class="status-badge status-online">Trực tuyến</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Khu vực thẻ tóm tắt số liệu -->
+    <section class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Tổng số nhân sự</div>
+        <div id="stat-tong-nv" class="stat-value">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Đã điểm danh hôm nay</div>
+        <div id="stat-da-diem-danh" class="stat-value">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Đúng giờ / Đi muộn</div>
+        <div class="stat-value"><span id="stat-dung-gio">0</span> / <span id="stat-di-muon" class="text-danger">0</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Tỷ lệ đúng giờ</div>
+        <div id="stat-ty-le" class="stat-value">0%</div>
+      </div>
+    </section>
+
+    <!-- Biểu mẫu thực hiện điểm danh -->
+    <section class="card form-section">
+      <h2 class="section-title">Ghi nhận Điểm danh Thực tế</h2>
+      <div id="form-message" class="alert d-none"></div>
+      <form id="attendance-form" class="form-grid">
+        <div class="form-group">
+          <label for="select-nhan-vien">Nhân viên:</label>
+          <select id="select-nhan-vien" required>
+            <option value="">-- Đang nạp danh sách nhân viên --</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="select-ca-lam">Ca làm việc:</label>
+          <select id="select-ca-lam" required>
+            <option value="">-- Đang nạp danh sách ca làm --</option>
+          </select>
+        </div>
+
+        <div class="form-group form-group-full">
+          <label for="input-ghi-chu">Ghi chú (Tùy chọn):</label>
+          <input type="text" id="input-ghi-chu" placeholder="Ví dụ: Đi công tác, đến sớm trực ca...">
+        </div>
+
+        <div class="form-actions form-group-full">
+          <button type="button" id="btn-checkin" class="btn btn-primary">Ghi nhận Check-in</button>
+          <button type="button" id="btn-checkout" class="btn btn-secondary">Ghi nhận Check-out</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Bảng tra cứu lịch sử điểm danh -->
+    <section class="card table-section">
+      <div class="table-header-row">
+        <h2 class="section-title">Lịch sử và Nhật ký Điểm danh</h2>
+        <div class="table-filters">
+          <label for="filter-date">Lọc theo ngày:</label>
+          <input type="date" id="filter-date">
+          <button id="btn-filter" class="btn btn-sm btn-outline">Xem ngày này</button>
+          <button id="btn-filter-all" class="btn btn-sm btn-secondary">Tất cả gần đây</button>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Mã NV</th>
+              <th>Họ và Tên</th>
+              <th>Phòng ban</th>
+              <th>Ca làm</th>
+              <th>Ngày</th>
+              <th>Giờ Check-in</th>
+              <th>Giờ Check-out</th>
+              <th>Trạng thái</th>
+              <th>Ghi chú</th>
+            </tr>
+          </thead>
+          <tbody id="table-body">
+            <tr>
+              <td colspan="9" class="text-center">Đang tải dữ liệu lịch sử...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <div class="container footer-content">
+      <p>Hệ thống phục vụ học tập: Docker Compose (Nginx + Node.js + MySQL 8.0).</p>
+      <p>Endpoint kiểm tra: <code>/api/health</code> | CSDL: MySQL 8.0 (utf8mb4)</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
