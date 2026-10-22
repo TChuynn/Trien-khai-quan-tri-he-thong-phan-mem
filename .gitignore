@@ -1,13 +1,6 @@
-# Môi trường và biến bí mật
-.env
-
-# Thư viện phụ thuộc Node.js
 node_modules/
-npm-debug.log
-
-# Dữ liệu sao lưu CSDL
-backups/*.sql
-
-# Tệp tạm hệ thống
+.env
+*.log
 .DS_Store
 Thumbs.db
+certs/
